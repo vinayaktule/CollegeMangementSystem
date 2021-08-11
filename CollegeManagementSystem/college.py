@@ -63,6 +63,69 @@ def admin_session():
     else:
         print("Enter correct option")
 
+# def auth_student():
+#     print("WELCOME TO STUDENT LOGIN PAGE")
+#     print("*"*50)
+
+#     print("1.\t Register Student")
+#     print("2.\t Mark Student Register")
+#     print("3.\t Logout")
+
+
+def teacher_session():
+    print("WELCOME TO TEACHER MENU PAGE")
+    print("*"*50)
+    print("1.\t Mark Student Register")
+    print("2.\t View Register")  
+    print("3.\t Logout") 
+
+    user_option = input(str("Option : " ))
+
+    if user_option ==  "1":
+        print("Mark Student Register")
+        command_handler.execute("SELECT username FROM users where privilege = 'student'")
+        db.commit()
+        records = command_handler.fetchall()
+        date = input(str("Date : DD/MM/YYYY : "))
+        for record in records:
+            record = str(record).replace("'","")
+            record = str(record).replace(",","")
+            record = str(record).replace("(","")
+            record = str(record).replace(")","")
+            # Present | Absent | Late
+            status = input(str("Status for "+str(record)+"P|A|L : \t"))
+            query_vals = (str(record), date, status)
+            command_handler.execute("INSERT INTO attendance (username, date, status) values(%s, %s, %s)", query_vals)
+            db.commit()
+            print(f"{record} is marked as {status}")
+
+    elif user_option == '2':
+        print("View Student Attendance")
+        command_handler.execute("SELECT username, date, status FROM attendance")
+        #db.commit()
+        records = command_handler.fetchall()
+        print("STUDENT\tDATE\tSTATUS")
+        for record in records:
+            print(f"{record[0]}\t{record[1]}\t{record[2]}")
+        
+    elif user_option == '3':
+        print("Successfully logout from College Management System")
+        exit
+
+    else:
+            print("Enter valid option")
+
+def auth_teacher():
+    print("WELCOME to TEACHER'S LOGIN PAGE !!!")
+    username = input(str("Enter username\t"))
+    password = input(str("Enter password\t"))
+    
+    if username == "Vinayak" and password == "Vinayak":
+        teacher_session()
+    else:
+        print("Incorrect username or password")
+
+
 def auth_admin():
     print("WELCOME to ADMIN LOGIN PAGE !!!")
     username = input(str("Enter username\t"))
@@ -90,11 +153,14 @@ def main():
             auth_admin()
         elif user_option == '2':
             print("Student Login")
+            #auth_student()
         elif user_option == '3':
             print("Teacher Login")
+            auth_teacher()
         elif user_option == '4':
             print("Successfully logout from College Management System")
-            exit()
+            break
+            #exit
 
         else:
             print("Enter valid option")
